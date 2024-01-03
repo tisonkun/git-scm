@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package com.tisonkun.git.core;
+package com.tisonkun.git.core.plumbing.hash;
 
-public class Main {
-    public static void main(String[] args) {
-        System.out.println(42);
-    }
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class HashConstants {
+    /**
+     * The amount of bytes the hash yields.
+     */
+    public static final int SIZE = 20;
 }

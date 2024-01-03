@@ -30,13 +30,21 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--
+            TODO(@tisonkun) remove this trick once MNG-7038 released (a.k.a. Maven 4.0).
+            @see https://issues.apache.org/jira/browse/MNG-7038
+        -->
+        <project.rootDirectory>${maven.multiModuleProjectDirectory}</project.rootDirectory>
 
         <!-- lib dependencies -->
         <assertj.version>3.24.2</assertj.version>
-        <jetbrains-annotations.version>24.0.1</jetbrains-annotations.version>
         <awaitility.version>4.2.0</awaitility.version>
+        <commons-lang3.version>3.13.0</commons-lang3.version>
+        <jetbrains-annotations.version>24.0.1</jetbrains-annotations.version>
+        <guava.version>32.1.2-jre</guava.version>
         <junit.version>5.9.2</junit.version>
         <lombok.version>1.18.30</lombok.version>
+        <netty.version>4.1.97.Final</netty.version>
         <picocli.version>4.6.3</picocli.version>
         <slf4j.version>2.0.7</slf4j.version>
 
@@ -45,8 +53,8 @@
         <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
 
         <!-- community maven plugins -->
-        <spotless.version>2.39.0</spotless.version>
         <palantir-java-format.version>2.36.0</palantir-java-format.version>
+        <spotless.version>2.39.0</spotless.version>
     </properties>
 
     <modules>
