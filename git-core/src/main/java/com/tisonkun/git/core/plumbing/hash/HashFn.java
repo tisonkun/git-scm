@@ -16,12 +16,28 @@
 
 package com.tisonkun.git.core.plumbing.hash;
 
-import lombok.experimental.UtilityClass;
+import com.google.common.hash.HashCode;
+import io.netty.buffer.ByteBuf;
 
-@UtilityClass
-public class HashConstants {
+public interface HashFn {
+    HashFn DEFAULT = new HashFnSha1();
+
     /**
-     * The amount of bytes the hash yields.
+     * @return the size of bytes representing the hash code.
      */
-    public static final int SIZE = 20;
+    int size();
+
+    /**
+     * Read the hash code from bytes[0, size()).
+     */
+    default HashCode read(ByteBuf bytes) {
+        final byte[] hashCode = new byte[size()];
+        bytes.readBytes(hashCode);
+        return HashCode.fromBytes(hashCode);
+    }
+
+    /**
+     * Calculate the hash code for bytes[start, start + len).
+     */
+    HashCode calculate(byte[] bytes, int start, int len);
 }
