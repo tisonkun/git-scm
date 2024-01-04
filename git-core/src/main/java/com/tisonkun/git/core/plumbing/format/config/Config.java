@@ -156,7 +156,8 @@ public class Config {
     private static int parseOptionKeyValue(String line, StringBuilder key, StringBuilder value) {
         // parse first character
         char ch = line.charAt(0);
-        Preconditions.checkState((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'), "malformed variable names: %s", line);
+        Preconditions.checkState(
+                (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'), "malformed variable names: %s", line);
         key.append(ch);
 
         // parse remaining key

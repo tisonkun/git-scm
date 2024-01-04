@@ -28,6 +28,7 @@ class ConfigTest {
         final Config config = Config.create(file);
         assertThat(config.hasSection("core")).isTrue();
         assertThat(config.section("core").hasOption("gitProxy")).isTrue();
-        assertThat(config.section("branch").subsection("devel").hasOption("remote")).isTrue();
+        assertThat(config.section("branch").subsection("devel").hasOption("remote"))
+                .isTrue();
     }
 }
