@@ -24,11 +24,18 @@ import org.junit.jupiter.api.Test;
 class ConfigTest {
     @Test
     public void testParseConfigFile() throws Exception {
-        final File file = new File(TestUtils.testResourceDir(), "gitconfig/testParseConfigFile");
-        final Config config = Config.create(file);
-        assertThat(config.hasSection("core")).isTrue();
-        assertThat(config.section("core").hasOption("gitProxy")).isTrue();
-        assertThat(config.section("branch").subsection("devel").hasOption("remote"))
-                .isTrue();
+        {
+            final File file = new File(TestUtils.testResourceDir(), "gitconfig/testParseConfigFile.1");
+            final Config config = Config.create(file);
+            assertThat(config.hasSection("core")).isTrue();
+            assertThat(config.section("core").hasOption("gitProxy")).isTrue();
+            assertThat(config.section("branch").subsection("devel").hasOption("remote"))
+                    .isTrue();
+        }
+        {
+            final File file = new File(TestUtils.testResourceDir(), "gitconfig/testParseConfigFile.2");
+            final Config config = Config.create(file);
+            assertThat(config.hasSection("core")).isTrue();
+        }
     }
 }

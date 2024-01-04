@@ -65,10 +65,12 @@ public class Config {
             }
 
             if (strippedLine.startsWith("[")) {
-                Preconditions.checkState(strippedLine.endsWith("]"), "malformed section syntax: %s", line);
+                final String moreStrippedLine =
+                        strippedLine.replaceFirst("[;#].*$", "").strip();
+                Preconditions.checkState(moreStrippedLine.endsWith("]"), "malformed section syntax: %s", line);
                 final StringBuilder sectionName = new StringBuilder();
                 final StringBuilder subsectionName = new StringBuilder();
-                if (parseSectionName(strippedLine, sectionName, subsectionName) != 0) {
+                if (parseSectionName(moreStrippedLine, sectionName, subsectionName) != 0) {
                     currentSection = sectionName.toString();
                     currentSubsection = subsectionName.toString();
                     if (currentSection.equalsIgnoreCase("include")) {
@@ -181,7 +183,14 @@ public class Config {
             idx += 1;
         }
         if (idx < len && line.charAt(idx) != '=') {
-            throw new IllegalArgumentException("malformed variable pair: " + line);
+            switch (line.charAt(idx)) {
+                case '=':
+                    break;
+                case ';', '#':
+                    return 0;
+                default:
+                    throw new IllegalArgumentException("malformed variable: " + line);
+            }
         }
         idx += 1;
         while (idx < len && Character.isWhitespace(line.charAt(idx))) {
@@ -209,10 +218,21 @@ public class Config {
         while (idx < len) {
             final char ch = line.charAt(idx++);
 
-            // HACK - how Git works
-            if (ch == '\t' && !quoted) {
-                value.append(' ');
-                continue;
+            if (!quoted) {
+                switch (ch) {
+                        // HACK - how Git works
+                    case '\t':
+                        value.append(' ');
+                        continue;
+                    case ';', '#':
+                        int trimIdx = value.length() - 1;
+                        while (trimIdx >= 0 && Character.isWhitespace(value.charAt(trimIdx))) {
+                            trimIdx -= 1;
+                        }
+                        value.setLength(trimIdx + 1);
+                        ;
+                        return 0;
+                }
             }
 
             // normal case - not '\'
