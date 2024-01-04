@@ -19,7 +19,7 @@ package com.tisonkun.git.core.plumbing.format.index;
 import com.google.common.base.Preconditions;
 import com.google.common.hash.HashCode;
 import com.google.common.io.Files;
-import com.tisonkun.git.core.plumbing.hash.HashUtils;
+import com.tisonkun.git.core.plumbing.hash.HashFn;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.io.File;
@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -59,18 +58,14 @@ public class Index {
 
         // read extensions
         final List<IndexExtension> extensions = new ArrayList<>();
-        while (true) {
-            final Optional<IndexExtension> extension = IndexExtension.create(bytes);
-            if (extension.isEmpty()) {
-                break;
-            }
-            extensions.add(extension.get());
+        while (bytes.readableBytes() > HashFn.DEFAULT.size()) {
+            extensions.add(IndexExtension.create(bytes));
         }
 
         // compare checksum
         final int offset = bytes.readerIndex();
-        final HashCode actualChecksum = HashUtils.calculateSha1(content, 0, offset);
-        final HashCode expectedChecksum = HashUtils.readSha1(bytes);
+        final HashCode actualChecksum = HashFn.DEFAULT.calculate(content, 0, offset);
+        final HashCode expectedChecksum = HashFn.DEFAULT.read(bytes);
         Preconditions.checkState(
                 expectedChecksum.equals(actualChecksum),
                 "checksum mismatch (expected = %s, actual = %s)",

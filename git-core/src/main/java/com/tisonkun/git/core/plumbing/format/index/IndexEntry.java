@@ -18,7 +18,7 @@ package com.tisonkun.git.core.plumbing.format.index;
 
 import com.google.common.base.Preconditions;
 import com.google.common.hash.HashCode;
-import com.tisonkun.git.core.plumbing.hash.HashUtils;
+import com.tisonkun.git.core.plumbing.hash.HashFn;
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import lombok.AccessLevel;
@@ -58,7 +58,7 @@ public class IndexEntry {
         builder.uid(bytes.readInt());
         builder.gid(bytes.readInt());
         builder.fileSize(bytes.readInt());
-        builder.sha1(HashUtils.readSha1(bytes));
+        builder.sha1(HashFn.DEFAULT.read(bytes));
 
         final short flag = bytes.readShort();
         final int nameLen = flag & 0xFFF;

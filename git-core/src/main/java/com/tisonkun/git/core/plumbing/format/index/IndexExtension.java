@@ -16,10 +16,8 @@
 
 package com.tisonkun.git.core.plumbing.format.index;
 
-import com.tisonkun.git.core.plumbing.hash.HashConstants;
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +29,10 @@ public class IndexExtension {
     private final ByteBuf data;
 
     // TODO(@tisonkun) destructure extension data
-    public static Optional<IndexExtension> create(ByteBuf bytes) {
-        if (bytes.readableBytes() <= HashConstants.SIZE) {
-            return Optional.empty();
-        }
-
+    public static IndexExtension create(ByteBuf bytes) {
         final CharSequence sig = bytes.readCharSequence(4, StandardCharsets.US_ASCII);
         final int size = bytes.readInt();
         final ByteBuf data = bytes.readBytes(size);
-        return Optional.of(new IndexExtension(sig, data));
+        return new IndexExtension(sig, data);
     }
 }

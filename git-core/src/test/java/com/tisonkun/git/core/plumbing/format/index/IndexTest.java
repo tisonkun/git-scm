@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 
 class IndexTest {
     @Test
-    public void parseIndexFile() throws Exception {
-        final File file = new File(TestUtils.baseDir() + "/.git/index");
+    public void testParseIndexFile() throws Exception {
+        final File file = new File(TestUtils.baseDir(), ".git/index");
         assumeThat(file.exists()).describedAs("runs only with .git folder").isTrue();
 
         final Index index = Index.create(file);

@@ -18,19 +18,21 @@ package com.tisonkun.git.core.plumbing.hash;
 
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
-import io.netty.buffer.ByteBuf;
-import lombok.experimental.UtilityClass;
 
-@UtilityClass
-public class HashUtils {
-    public static HashCode readSha1(ByteBuf bytes) {
-        final byte[] sha1 = new byte[HashConstants.SIZE];
-        bytes.readBytes(sha1);
-        return HashCode.fromBytes(sha1);
+/**
+ * Current default implementation of {@link HashFn}. See also
+ * <a href="https://git-scm.com/docs/hash-function-transition/">
+ * "Migrate Git from SHA-1 to a stronger hash function"</a> for a future plan.
+ */
+public class HashFnSha1 implements HashFn {
+    @Override
+    public int size() {
+        return 20;
     }
 
-    @SuppressWarnings("deprecation") // Git does use SHA-1
-    public static HashCode calculateSha1(byte[] content, int start, int len) {
-        return Hashing.sha1().hashBytes(content, start, len);
+    @SuppressWarnings("deprecation")
+    @Override
+    public HashCode calculate(byte[] bytes, int start, int len) {
+        return Hashing.sha1().hashBytes(bytes, start, len);
     }
 }
