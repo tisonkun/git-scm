@@ -24,7 +24,7 @@ import com.google.common.hash.Hashing;
  * <a href="https://git-scm.com/docs/hash-function-transition/">
  * "Migrate Git from SHA-1 to a stronger hash function"</a> for a future plan.
  */
-public class HashFnSha1 implements HashFn {
+class HashFnSha1 implements HashFn {
     @Override
     public int size() {
         return 20;

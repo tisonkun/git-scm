@@ -16,6 +16,7 @@
 
 package com.tisonkun.git.core.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -37,7 +38,16 @@ public class TestUtils {
         }
     }
 
+    public static String rootDir() {
+        return PROPERTIES.getProperty("rootDir");
+    }
+
     public static String baseDir() {
         return PROPERTIES.getProperty("baseDir");
+    }
+
+    public static String testResourceDir() {
+        final File baseDir = new File(baseDir());
+        return new File(baseDir, "src/test/resources").getAbsolutePath();
     }
 }

@@ -46,7 +46,7 @@ public class IndexEntry {
     private final boolean skipWorktree;
     private final boolean intentToAdd;
 
-    public static IndexEntry create(ByteBuf bytes, int version) {
+    static IndexEntry create(ByteBuf bytes, int version) {
         final Builder builder = new Builder();
         builder.ctimeSeconds(bytes.readInt());
         builder.ctimeNanoseconds(bytes.readInt());
@@ -66,7 +66,7 @@ public class IndexEntry {
 
         int entryLen = 62;
         if ((flag & 0x4000) != 0) { // extended
-            Preconditions.checkArgument(version >= 3, "version (%s) < 3 cannot have extended flags", version);
+            Preconditions.checkState(version >= 3, "version (%s) < 3 cannot have extended flags", version);
             final int extraFlags = bytes.readShort();
             builder.skipWorktree((extraFlags & 0x4000) != 0);
             builder.intentToAdd((extraFlags & 0x2000) != 0);
