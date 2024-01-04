@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package com.tisonkun.git.core.plumbing.format.index;
+package com.tisonkun.git.core.plumbing.format.config;
 
-import static org.assertj.core.api.Assumptions.assumeThat;
-import com.tisonkun.git.core.test.TestUtils;
-import java.io.File;
-import org.junit.jupiter.api.Test;
+import javax.annotation.Nullable;
+import lombok.Data;
 
-class IndexTest {
-    @Test
-    public void testParseIndexFile() throws Exception {
-        final File file = new File(TestUtils.rootDir(), ".git/index");
-        assumeThat(file.exists()).describedAs("runs only with .git folder").isTrue();
+@Data
+public class ConfigInclude {
+    @Nullable
+    private final String condition;
 
-        final Index index = Index.create(file);
-        assumeThat(index.getEntries()).anyMatch(ent -> ent.getPathname().equals(".editorconfig"));
-    }
+    private final String path;
 }
