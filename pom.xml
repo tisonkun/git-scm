@@ -50,7 +50,8 @@
 
         <!-- bundled maven plugins -->
         <maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
 
         <!-- community maven plugins -->
         <palantir-java-format.version>2.36.0</palantir-java-format.version>

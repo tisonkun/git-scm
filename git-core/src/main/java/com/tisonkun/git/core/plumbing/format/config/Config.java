@@ -28,11 +28,12 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-@SuppressWarnings("OptionalAssignedToNull") // includeCondition
-@Data
+@ToString
+@EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Config {
     private static final Pattern SECTION_NAME_PAT = Pattern.compile("^([a-zA-Z0-9.\\-]+)(?:\\s+\"(.*)\")?$");
@@ -41,6 +42,7 @@ public class Config {
     private final List<ConfigInclude> includes;
 
     // @see https://git-scm.com/docs/git-config#_configuration_file
+    @SuppressWarnings("OptionalAssignedToNull") // includeCondition
     public static Config create(File source) throws IOException {
         final Iterator<String> lines =
                 Files.readLines(source, StandardCharsets.UTF_8).iterator();
@@ -265,6 +267,14 @@ public class Config {
 
         Preconditions.checkState(!quoted, "malformed variable value: unclosed quote");
         return 0;
+    }
+
+    public List<ConfigInclude> includes() {
+        return includes;
+    }
+
+    public List<ConfigSection> sections() {
+        return sections;
     }
 
     /**
