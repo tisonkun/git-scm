@@ -34,31 +34,31 @@ class ConfigTest {
 
         final ConfigSection core = config.section("core");
         assertThat(core.options()).hasSize(3);
-        assertThat(core.option("filemode")).map(ConfigOption::getValue).hasValue("false");
+        assertThat(core.option("filemode")).map(ConfigOption::value).hasValue("false");
         assertThat(core.optionAll("gitproxy"))
-                .map(ConfigOption::getValue)
+                .map(ConfigOption::value)
                 .containsExactlyInAnyOrder("ssh for kernel.org", "default-proxy");
 
         assertThat(config.hasSection("diff")).isTrue();
         final ConfigSection diff = config.section("diff");
         assertThat(diff.options()).hasSize(2);
-        assertThat(diff.option("external")).map(ConfigOption::getValue).hasValue("/usr/local/bin/diff-wrapper");
-        assertThat(diff.option("renames")).map(ConfigOption::getValue).hasValue("true");
+        assertThat(diff.option("external")).map(ConfigOption::value).hasValue("/usr/local/bin/diff-wrapper");
+        assertThat(diff.option("renames")).map(ConfigOption::value).hasValue("true");
 
         assertThat(config.hasSection("branch")).isTrue();
         final ConfigSection branch = config.section("branch");
         assertThat(branch.subsections()).hasSize(1);
         final ConfigSubsection devel = branch.subsection("devel");
         assertThat(devel.options()).hasSize(2);
-        assertThat(devel.option("remote")).map(ConfigOption::getValue).hasValue("origin");
-        assertThat(devel.option("merge")).map(ConfigOption::getValue).hasValue("refs/heads/devel");
+        assertThat(devel.option("remote")).map(ConfigOption::value).hasValue("origin");
+        assertThat(devel.option("merge")).map(ConfigOption::value).hasValue("refs/heads/devel");
 
         assertThat(config.hasSection("remote")).isTrue();
         final ConfigSection remote = config.section("remote");
         assertThat(remote.subsections()).hasSize(1);
         final ConfigSubsection origin = remote.subsection("origin");
         assertThat(origin.options()).hasSize(1);
-        assertThat(origin.option("url")).map(ConfigOption::getValue).hasValue("https://example.com/git");
+        assertThat(origin.option("url")).map(ConfigOption::value).hasValue("https://example.com/git");
 
         final List<ConfigInclude> includes = config.includes();
         assertThat(includes).hasSize(9);
@@ -84,22 +84,22 @@ class ConfigTest {
         assertThat(config.hasSection("core")).isTrue();
         final ConfigSection core = config.section("core");
         assertThat(core.options()).hasSize(3);
-        assertThat(core.option("filemode")).map(ConfigOption::getValue).hasValue("false");
-        assertThat(core.option("buttonoption")).map(ConfigOption::getValue).hasValue("");
-        assertThat(core.option("buttonoptionagain")).map(ConfigOption::getValue).hasValue("");
+        assertThat(core.option("filemode")).map(ConfigOption::value).hasValue("false");
+        assertThat(core.option("buttonoption")).map(ConfigOption::value).hasValue("");
+        assertThat(core.option("buttonoptionagain")).map(ConfigOption::value).hasValue("");
 
         assertThat(config.hasSection("bar.baz")).isTrue();
         final ConfigSection barBaz = config.section("bar.baz");
         assertThat(barBaz.options()).hasSize(2);
-        assertThat(barBaz.option("foo")).map(ConfigOption::getValue).hasValue("bar");
-        assertThat(barBaz.option("url")).map(ConfigOption::getValue).hasValue("https://example.com/git");
+        assertThat(barBaz.option("foo")).map(ConfigOption::value).hasValue("bar");
+        assertThat(barBaz.option("url")).map(ConfigOption::value).hasValue("https://example.com/git");
 
         assertThat(config.hasSection("url")).isTrue();
         final ConfigSubsection subsection = config.section("url").subsection("git@example.com:");
         assertThat(subsection.options()).hasSize(1);
         final ConfigOption option = subsection.options().getFirst();
-        assertThat(option.getKey()).isEqualTo("insteadof");
-        assertThat(option.getValue()).isEqualTo("https://example.com/");
+        assertThat(option.key()).isEqualTo("insteadof");
+        assertThat(option.value()).isEqualTo("https://example.com/");
     }
 
     @Test

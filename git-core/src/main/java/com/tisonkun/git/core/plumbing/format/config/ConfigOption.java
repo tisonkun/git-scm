@@ -16,13 +16,7 @@
 
 package com.tisonkun.git.core.plumbing.format.config;
 
-import lombok.Data;
-
-@Data
-public class ConfigOption {
-    private final String key;
-    private final String value;
-
+public record ConfigOption(String key, String value) {
     // Option's key is in a case-insensitive comparison.
     public boolean isKey(String key) {
         return this.key.equalsIgnoreCase(key);
