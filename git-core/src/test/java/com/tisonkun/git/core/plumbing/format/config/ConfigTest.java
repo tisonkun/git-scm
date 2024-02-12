@@ -25,137 +25,94 @@ import org.junit.jupiter.api.Test;
 
 class ConfigTest {
     @Test
-    public void testParseConfigFile() throws Exception {
-        {
-            // git configuration example from: https://git-scm.com/docs/git-config#_example
-            final File file = new File(TestUtils.testResourceDir(), "gitconfig/testParseConfigFile.1");
-            final Config config = Config.create(file);
-            assertThat(config.hasSection("core")).isTrue();
-            final ConfigSection core = config.section("core");
-            assertThat(core.getOptions().size()).isEqualTo(3);
-            assertThat(core.hasOption("filemode")).isTrue();
-            assertThat(core.hasOption("gitProxy")).isTrue();
-            for (ConfigOption option : core.getOptions()) {
-                switch (option.getKey()) {
-                    case "filemode" -> assertThat(option.getValue()).isEqualTo("false");
-                        // option's key is set to lower case manually
-                    case "gitproxy" -> assertThat(option.getValue()).isIn("ssh for kernel.org", "default-proxy");
-                    default -> throw new AssertionError("unexpected option: " + option.getKey());
-                }
-            }
-            assertThat(config.hasSection("diff")).isTrue();
-            final ConfigSection diff = config.section("diff");
-            assertThat(diff.getOptions().size()).isEqualTo(2);
-            assertThat(diff.hasOption("external")).isTrue();
-            assertThat(diff.hasOption("renames")).isTrue();
-            for (ConfigOption option : diff.getOptions()) {
-                switch (option.getKey()) {
-                    case "external" -> assertThat(option.getValue()).isEqualTo("/usr/local/bin/diff-wrapper");
-                    case "renames" -> assertThat(option.getValue()).isEqualTo("true");
-                    default -> throw new AssertionError("unexpected option: " + option.getKey());
-                }
-            }
+    public void testSample() throws Exception {
+        // git configuration example from: https://git-scm.com/docs/git-config#_example
+        final File file = new File(TestUtils.testResourceDir(), "gitconfig/sample-config.ini");
 
-            assertThat(config.hasSection("branch")).isTrue();
-            assertThat(config.section("branch").getSubsections().size()).isEqualTo(1);
-            final ConfigSubsection devel = config.section("branch").subsection("devel");
-            assertThat(devel.getOptions().size()).isEqualTo(2);
-            assertThat(devel.hasOption("remote")).isTrue();
-            assertThat(devel.hasOption("merge")).isTrue();
-            for (ConfigOption option : devel.getOptions()) {
-                switch (option.getKey()) {
-                    case "remote" -> assertThat(option.getValue()).isEqualTo("origin");
-                    case "merge" -> assertThat(option.getValue()).isEqualTo("refs/heads/devel");
-                    default -> throw new AssertionError("unexpected option: " + option.getKey());
-                }
-            }
+        final Config config = Config.create(file);
+        assertThat(config.hasSection("core")).isTrue();
 
-            assertThat(config.hasSection("remote")).isTrue();
-            assertThat(config.section("remote").getSubsections().size()).isEqualTo(1);
-            final ConfigSubsection origin = config.section("remote").subsection("origin");
-            assertThat(origin.getOptions().size()).isEqualTo(1);
-            assertThat(origin.hasOption("url")).isTrue();
-            for (ConfigOption option : origin.getOptions()) {
-                if (option.getKey().equals("url")) {
-                    assertThat(option.getValue()).isEqualTo("https://example.com/git");
-                } else {
-                    throw new AssertionError("unexpected option: " + option.getKey());
-                }
-            }
+        final ConfigSection core = config.section("core");
+        assertThat(core.options()).hasSize(3);
+        assertThat(core.option("filemode")).map(ConfigOption::getValue).hasValue("false");
+        assertThat(core.optionAll("gitproxy"))
+                .map(ConfigOption::getValue)
+                .containsExactlyInAnyOrder("ssh for kernel.org", "default-proxy");
 
-            final List<ConfigInclude> includes = config.getIncludes();
-            assertThat(includes.size()).isEqualTo(9);
-            for (ConfigInclude include : includes) {
-                switch (include.getCondition()) {
-                    case null -> assertThat(include.getPath()).isIn("/path/to/foo.inc", "foo.inc", "~/foo.inc");
-                    case "gitdir:/path/to/foo/.git", "gitdir:~/to/group/" -> assertThat(include.getPath())
-                            .isEqualTo("/path/to/foo.inc");
-                    case "gitdir:/path/to/group/" -> assertThat(include.getPath())
-                            .isIn("/path/to/foo.inc", "foo.inc");
-                    case "onbranch:foo-branch", "hasconfig:remote.*.url:https://example.com/**" -> assertThat(
-                                    include.getPath())
-                            .isEqualTo("foo.inc");
-                    default -> throw new AssertionError("Unexpected value: " + include.getCondition());
-                }
-            }
-        }
-        {
-            // corner cases test
-            final File file = new File(TestUtils.testResourceDir(), "gitconfig/testParseConfigFile.2");
-            final Config config = Config.create(file);
-            assertThat(config.getSections().size()).isEqualTo(3);
+        assertThat(config.hasSection("diff")).isTrue();
+        final ConfigSection diff = config.section("diff");
+        assertThat(diff.options()).hasSize(2);
+        assertThat(diff.option("external")).map(ConfigOption::getValue).hasValue("/usr/local/bin/diff-wrapper");
+        assertThat(diff.option("renames")).map(ConfigOption::getValue).hasValue("true");
 
-            assertThat(config.hasSection("core")).isTrue();
-            final ConfigSection core = config.section("core");
-            assertThat(core.getOptions().size()).isEqualTo(3);
-            assertThat(core.hasOption("filemode")).isTrue();
-            for (ConfigOption option : core.getOptions()) {
-                switch (option.getKey()) {
-                    case "filemode" -> assertThat(option.getValue()).isEqualTo("false");
-                    case "buttonoption", "buttonoptionagain" -> assertThat(option.getValue())
-                            .isEqualTo("");
-                    default -> throw new AssertionError("unexpected option: " + option.getKey());
-                }
-            }
-            assertThat(config.hasSection("bar.baz")).isTrue();
-            final ConfigSection barBaz = config.section("bar.baz");
-            assertThat(barBaz.getOptions().size()).isEqualTo(2);
-            assertThat(barBaz.hasOption("foo")).isTrue();
-            for (ConfigOption option : barBaz.getOptions()) {
-                switch (option.getKey()) {
-                    case "foo" -> assertThat(option.getValue()).isEqualTo("bar");
-                    case "url" -> assertThat(option.getValue()).isEqualTo("https://example.com/git");
-                    default -> throw new AssertionError("unexpected option: " + option.getKey());
-                }
-            }
+        assertThat(config.hasSection("branch")).isTrue();
+        final ConfigSection branch = config.section("branch");
+        assertThat(branch.subsections()).hasSize(1);
+        final ConfigSubsection devel = branch.subsection("devel");
+        assertThat(devel.options()).hasSize(2);
+        assertThat(devel.option("remote")).map(ConfigOption::getValue).hasValue("origin");
+        assertThat(devel.option("merge")).map(ConfigOption::getValue).hasValue("refs/heads/devel");
 
-            assertThat(config.hasSection("url")).isTrue();
-            final ConfigSubsection subsection = config.section("url").subsection("git@example.com:");
-            assertThat(subsection.getOptions().size()).isEqualTo(1);
-            final ConfigOption option = subsection.getOptions().getFirst();
-            assertThat(option.getKey()).isEqualTo("insteadof");
-            assertThat(option.getValue()).isEqualTo("https://example.com/");
-        }
-        {
-            // illegal format 1
-            final File file = new File(TestUtils.testResourceDir(), "gitconfig/illegalConfigFile.1");
+        assertThat(config.hasSection("remote")).isTrue();
+        final ConfigSection remote = config.section("remote");
+        assertThat(remote.subsections()).hasSize(1);
+        final ConfigSubsection origin = remote.subsection("origin");
+        assertThat(origin.options()).hasSize(1);
+        assertThat(origin.option("url")).map(ConfigOption::getValue).hasValue("https://example.com/git");
+
+        final List<ConfigInclude> includes = config.includes();
+        assertThat(includes).hasSize(9);
+        assertThat(includes)
+                .containsExactlyInAnyOrder(
+                        new ConfigInclude(null, "/path/to/foo.inc"),
+                        new ConfigInclude(null, "foo.inc"),
+                        new ConfigInclude(null, "~/foo.inc"),
+                        new ConfigInclude("gitdir:/path/to/foo/.git", "/path/to/foo.inc"),
+                        new ConfigInclude("gitdir:~/to/group/", "/path/to/foo.inc"),
+                        new ConfigInclude("gitdir:/path/to/group/", "/path/to/foo.inc"),
+                        new ConfigInclude("gitdir:/path/to/group/", "foo.inc"),
+                        new ConfigInclude("onbranch:foo-branch", "foo.inc"),
+                        new ConfigInclude("hasconfig:remote.*.url:https://example.com/**", "foo.inc"));
+    }
+
+    @Test
+    public void testCornerCase() throws Exception {
+        final File file = new File(TestUtils.testResourceDir(), "gitconfig/corner-config.ini");
+        final Config config = Config.create(file);
+        assertThat(config.sections()).hasSize(3);
+
+        assertThat(config.hasSection("core")).isTrue();
+        final ConfigSection core = config.section("core");
+        assertThat(core.options()).hasSize(3);
+        assertThat(core.option("filemode")).map(ConfigOption::getValue).hasValue("false");
+        assertThat(core.option("buttonoption")).map(ConfigOption::getValue).hasValue("");
+        assertThat(core.option("buttonoptionagain")).map(ConfigOption::getValue).hasValue("");
+
+        assertThat(config.hasSection("bar.baz")).isTrue();
+        final ConfigSection barBaz = config.section("bar.baz");
+        assertThat(barBaz.options()).hasSize(2);
+        assertThat(barBaz.option("foo")).map(ConfigOption::getValue).hasValue("bar");
+        assertThat(barBaz.option("url")).map(ConfigOption::getValue).hasValue("https://example.com/git");
+
+        assertThat(config.hasSection("url")).isTrue();
+        final ConfigSubsection subsection = config.section("url").subsection("git@example.com:");
+        assertThat(subsection.options()).hasSize(1);
+        final ConfigOption option = subsection.options().getFirst();
+        assertThat(option.getKey()).isEqualTo("insteadof");
+        assertThat(option.getValue()).isEqualTo("https://example.com/");
+    }
+
+    @Test
+    public void testMalformed() {
+        final String[] messages =
+                new String[] {"malformed section name", "malformed variable names", "malformed section name"};
+
+        for (int i = 0; i < messages.length; i++) {
+            final String filename = "gitconfig/malformed-config-%s.ini".formatted(i + 1);
+            final File file = new File(TestUtils.testResourceDir(), filename);
             assertThatThrownBy(() -> Config.create(file))
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("malformed section name");
-        }
-        {
-            // illegal format 2
-            final File file = new File(TestUtils.testResourceDir(), "gitconfig/illegalConfigFile.2");
-            assertThatThrownBy(() -> Config.create(file))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("malformed variable names");
-        }
-        {
-            // illegal format 3
-            final File file = new File(TestUtils.testResourceDir(), "gitconfig/illegalConfigFile.3");
-            assertThatThrownBy(() -> Config.create(file))
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("malformed section name");
+                    .hasMessageContaining(messages[i]);
         }
     }
 }

@@ -18,11 +18,15 @@ package com.tisonkun.git.core.plumbing.format.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-@Data
+@ToString
+@EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class ConfigSection {
     private final String name;
@@ -48,11 +52,27 @@ public class ConfigSection {
         return subsection;
     }
 
+    public List<ConfigSubsection> subsections() {
+        return subsections;
+    }
+
+    public Optional<ConfigOption> option(String key) {
+        return options.stream().filter(opt -> opt.isKey(key)).findFirst();
+    }
+
+    public List<ConfigOption> optionAll(String key) {
+        return options.stream().filter(opt -> opt.isKey(key)).collect(Collectors.toList());
+    }
+
+    public List<ConfigOption> options() {
+        return options;
+    }
+
     /**
      * Adds a new Option to the Section and returns the updated Section.
      */
     public ConfigSection addOption(String key, String value) {
-        this.options.add(new ConfigOption(key, value));
+        options.add(new ConfigOption(key, value));
         return this;
     }
 

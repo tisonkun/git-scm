@@ -26,7 +26,6 @@ class IndexTest {
     public void testParseIndexFile() throws Exception {
         final File file = new File(TestUtils.rootDir(), ".git/index");
         assumeThat(file.exists()).describedAs("runs only with .git folder").isTrue();
-
         final Index index = Index.create(file);
         assumeThat(index.getEntries()).anyMatch(ent -> ent.getPathname().equals(".editorconfig"));
     }

@@ -18,11 +18,15 @@ package com.tisonkun.git.core.plumbing.format.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-@Data
+@ToString
+@EqualsAndHashCode
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class ConfigSubsection {
     private final String name;
@@ -31,6 +35,18 @@ public class ConfigSubsection {
     // Section's name is in a case-sensitive comparison.
     public boolean isName(String name) {
         return this.name.equals(name);
+    }
+
+    public Optional<ConfigOption> option(String key) {
+        return options.stream().filter(opt -> opt.isKey(key)).findFirst();
+    }
+
+    public List<ConfigOption> optionAll(String key) {
+        return options.stream().filter(opt -> opt.isKey(key)).collect(Collectors.toList());
+    }
+
+    public List<ConfigOption> options() {
+        return options;
     }
 
     /**

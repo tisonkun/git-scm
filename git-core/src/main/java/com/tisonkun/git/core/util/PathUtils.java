@@ -16,6 +16,13 @@
 
 package com.tisonkun.git.core.util;
 
+import java.lang.foreign.Arena;
+import java.lang.foreign.FunctionDescriptor;
+import java.lang.foreign.Linker;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.SymbolLookup;
+import java.lang.foreign.ValueLayout;
+import java.lang.invoke.MethodHandle;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.SystemProperties;
 
@@ -32,5 +39,21 @@ public class PathUtils {
             }
         }
         return path;
+    }
+
+    public static void main(String[] args) throws Throwable {
+        final Linker linker = Linker.nativeLinker();
+        final SymbolLookup libc = linker.defaultLookup();
+        final MethodHandle handle = linker.downcallHandle(
+                libc.find("getpwnam").orElseThrow(), FunctionDescriptor.of(ValueLayout.ADDRESS, ValueLayout.ADDRESS));
+        try (Arena arena = Arena.ofConfined()) {
+            final MemorySegment passwd = (MemorySegment) handle.invoke(arena.allocateUtf8String("root"));
+            System.out.println("passwd=" + passwd);
+            System.out.println("pw_name="
+                    + passwd.reinterpret(Long.MAX_VALUE)
+                            .get(ValueLayout.ADDRESS, 48)
+                            .reinterpret(Long.MAX_VALUE)
+                            .getUtf8String(0));
+        }
     }
 }
