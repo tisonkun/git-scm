@@ -16,6 +16,10 @@ baseDir = "."
 
 headerPath = "Apache-2.0.txt"
 
+excludes = [
+    "/git-core/src/test/resources/gitconfig/**",
+]
+
 [properties]
 inceptionYear = 2024
 copyrightOwner = "tison <wander4096@gmail.com>"
